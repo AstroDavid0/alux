@@ -34,6 +34,9 @@ import { NativeBaseProvider } from 'native-base';
 import { NavigationContainer } from '@react-navigation/native';
 import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 
+import { createStackNavigator,TransitionSpecs,TransitionPresets } from '@react-navigation/stack';
+
+
 //import from screens
 import HomeScreen from './src/screens/HomeScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
@@ -45,12 +48,20 @@ import NavBar from './src/componets/NavBar/NavBar';
 
 
 
-const App: () => Node = () => {
+const App = () => {
 
-  const Stack = createSharedElementStackNavigator();
+  //const Stack = createSharedElementStackNavigator();
+
+  const Stack = createStackNavigator();
 
 
   const isDarkMode = useColorScheme() === 'dark';
+
+  const forFade = ({ current }) => ({
+    cardStyle    : {
+      opacity: current.progress,
+    },
+  });
  
 
   return (
@@ -60,28 +71,8 @@ const App: () => Node = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Discover" options={{ title: <NavBar/> ,     headerShadowVisible: false, headerBackTitleVisible: false   }}   component={HomeScreen} />
-        <Stack.Screen name="Details" component={DetailsScreen} options={{headerShown: false}} sharedElements={(route, otherRoute, showing) => {
-            const { imagelink } = route.params;
-            return [
-              {
-                id: `item.${imagelink}.photo`,
-                animation: 'move',
-                 resize: 'auto'
-                // align: ''left-top'
-              },
-            ];
-          }} />
-        <Stack.Screen name="Profile" options={{ title:"X", headerShown: false, headerShadowVisible: false, headerBackTitleVisible: false }}   component={ProfileScreen} sharedElements={(route, otherRoute, showing) => {
-            const { imagelink } = route.params;
-            return [
-              {
-                id: `item.${imagelink}.photo`,
-                animation: 'move',
-                 resize: 'auto'
-                // align: ''left-top'
-              },
-            ];
-          }} />
+        <Stack.Screen name="Details" component={DetailsScreen} options={{headerShown: false,  cardStyleInterpolator: forFade}}  />
+        <Stack.Screen name="Profile" options={{ title:"X", headerShown: false, headerShadowVisible: false, headerBackTitleVisible: false,...TransitionPresets.SlideFromRightIOS  }}   component={ProfileScreen}  />
          
       </Stack.Navigator>
     </NavigationContainer> 
